@@ -4,28 +4,28 @@ const sugg = [
   {
     id: 1,
     avatar:
-      "https://m.cricbuzz.com/a/img/v1/192x192/i1/c170661/virat-kohli.jpg",
-    username: "virat kohli",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQa12Aplu5JLaKVCqNW0tZxZ2JAotp8IPXBtg&usqp=CAU",
+    username: "Saiyan",
     company: {
-      name: "BCC",
+      name: "DragonBall",
     },
   },
   {
     id: 2,
     avatar:
-      "https://upload.wikimedia.org/wikipedia/commons/9/98/Tom_Cruise_%2834450932580%29.jpg",
-    username: "Tom cruise",
+      "https://staticg.sportskeeda.com/editor/2022/06/4b665-16560787404655.png",
+    username: "the_hokage",
     company: {
-      name: "Hollywood",
+      name: "Naruto",
     },
   },
   {
     id: 3,
     avatar:
-      "https://upload.wikimedia.org/wikipedia/commons/0/0c/Angelina_Jolie_by_Gage_Skidmore.jpg",
-    username: "Angelina jolie",
+      "http://pm1.narvii.com/6383/2cb0f321852ac44e6c637ac7832af70836b85f31_00.jpg",
+    username: "Black_Prince",
     company: {
-      name: "Hollywood",
+      name: "Code Geass",
     },
   },
 ];
@@ -54,7 +54,7 @@ function Suggestions() {
           <div className="flex-1 ml-4">
             <h2 className="text-sm font-semibold">{profile.username}</h2>
             <h3 className="text-sm text-gray-400">
-              Works at {profile.company.name}
+              From anime {profile.company.name}
             </h3>
           </div>
           <button className="text-blue-500">Follow</button>
