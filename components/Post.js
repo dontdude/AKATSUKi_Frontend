@@ -1,12 +1,18 @@
+import { useState } from "react";
 import {
     DotsHorizontalIcon,
     HeartIcon,
+    HeartIconFilled,
     PaperAirplaneIcon,
     ChatIcon,
     BookmarkIcon,
     EmojiHappyIcon,
   } from "@heroicons/react/outline";
+
   function Post({ username, userImg, img, caption }) {
+
+    const [iconColored, setIconColored] = useState(false);
+
     return (
       // default value for box border using rounded
       <div className="bg-stone-800 my-7 shadow-lg rounded-xl">
@@ -30,7 +36,11 @@ import {
          {/* Post icon */}
         <div className="flex justify-between px-4 pt-4">
           <div className="flex space-x-4">
-            <HeartIcon className="btn" />
+
+            <div onClick={() => setIconColored(!iconColored)}>
+              {iconColored ? <HeartIcon className="btn text-red-700 " /> : <HeartIcon className="btn " />}
+            </div>
+
             <ChatIcon className="btn" />
             <PaperAirplaneIcon className="btn rotate-45" />
           </div>
