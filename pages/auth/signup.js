@@ -1,15 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import Router from "next/router";
-import Link from "next/link";
 import axios from "axios";
-
-import AuthContext from "../../context/AuthContext";         
 import {toast} from "react-toastify";
 
 
 const Signup = () => {
-
-  const Context = useContext(AuthContext);        
+  
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const [name, setName] = useState('');
   const [userName, setUserName] = useState('');
@@ -18,25 +15,34 @@ const Signup = () => {
 
   // sends otp only when user in successfully registered
   const sendOTP = () => {
-        
-    axios.post('http://15.206.128.13:8081/send_otp', {
+
+    axios.post(API_URL + '/send_otp', {
       email : email
     })
+
     .then(res => {                
-      console.log(res);  
-      toast(res.message, {
+      console.log(res); 
+      toast(res.request.response, {
         type: "success"
       });
-      // Redirect to verify otp page after a delay of 1 second
-      async () => {
-          await setTimeout(async () => {
-            Router.push("/auth/verifyOTP");
-          }, 1000);
-      }
+      
+      Router.push({                 // Redirected to verify OTP page
+        pathname: '/auth/verify',
+        query: { email: email }
+      }, '/auth/verify');           // url looks clean, i.e, without query props mentioned in url
     })
+
     .catch(error => {
       console.log(error);
-      toast(error.message, {
+      var errorMessage = error;
+      if (error.response) {
+        errorMessage = error.response.data.message;
+        console.log("server responded");
+      } else if (error.request) {
+        errorMessage = error.message;
+      } 
+      
+      toast(errorMessage, {
         type: "error"
       });
     });
@@ -45,21 +51,33 @@ const Signup = () => {
   // Send registration form details to api
   const handleSignUp = () => {
     
-    axios.post('http://15.206.128.13:8081/signup', {
+    axios.post(API_URL + '/signup', {
       email : email, 
       password : password,
       username : userName,
       name : name
     })
-    .then(res => {                
+
+    .then(res => {  
       console.log(res); 
-      sendOTP();  
-      //Context.setUser({ email: res.user.email, username });
-      //user authenticated in all pages, using context api
+      toast(res.request.response.message, {
+        type: "success"
+      });
+      
+      sendOTP();               // signup successful, now sending verification OTP 
     })
+
     .catch(error => {
       console.log(error);
-      toast(error.message, {
+      var errorMessage = error;
+      if (error.response) {
+        errorMessage = error.response.data.message;
+        console.log("server responded");
+      } else if (error.request) {
+        errorMessage = error.message;
+      } 
+      
+      toast(errorMessage, {
         type: "error"
       });
     });
@@ -70,15 +88,11 @@ const Signup = () => {
     handleSignUp();
   };
 
-//   if(Context.user?.username){      //user already authenticated
-//     Router.push("/");
-//   }
-
   return (
     <div className="min-h-screen bg-gradient-to-r from-red-500 to-gray-800 flex items-center">
       <div className="container mx-auto">
         <div className="flex flex-col lg:flex-row w-10/12 lg:w-8/12 bg-gray-700 rounded-xl mx-auto shadow-lg overflow-hidden">
-          <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-12 bg-no-repeat bg-cover bg-center bg-stone-900 bg-[url('https://wallpaperaccess.com/full/1659825.jpg')]" >
+          <div className="hidden lg:inline-grid w-full lg:w-1/2 flex flex-col items-center justify-center p-12 bg-no-repeat bg-cover bg-center bg-stone-900 bg-[url('https://wallpaperaccess.com/full/1659825.jpg')]" >
             {/* <h1 className="text-orange-700 text-3xl mb-3">Welcome to AKATSUKi</h1>
             <div>
               <p className="text-orange-700">AKATSUKi is an anime and manga social networking and social cataloging webapp run by volunteers. The site provides its users with a list-like system to organize, review, suggest and score anime and manga.<a href="#" className="text-purple-500 font-semibold">Visit Home</a></p>
@@ -136,6 +150,9 @@ const Signup = () => {
                 <button className="w-full bg-red-800 py-3 text-center text-white text-xl rounded-sm">Signup</button>
               </div>
 
+              <div className="mt-5 flex justify-center">
+                <pre>Already Registered? <a className='text-blue-400 font-semibold py-1 cursor-pointer' onClick={sendOTP}>Verify OTP</a></pre>
+              </div>
             </form>
           </div>
         </div>
