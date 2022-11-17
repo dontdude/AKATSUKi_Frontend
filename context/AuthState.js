@@ -1,31 +1,49 @@
 //AuthState is the context provider which provides state value to all the requesting component
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import AuthContext from "./AuthContext.js";
+import Router from "next/router";
 
 const AuthState = (props) => {
 
-  const [authTokens, setAuthTokens] = useState(null);
-  const [user, setUser] = useState(null);     //user is authenticated or not
+  let [authTokens, setAuthTokens] = useState(null)
+  let [user, setUser] = useState(null)
+  let [loading, setLoading] = useState(true)     
 
-  const loginUser = async(e) => {
-     e.preventDefault();
-     const response = fetch('http://15.206.116.25:8081/login', {
-      method : 'POST',
-      headers:{
-        'content-Type':'application/json'
-      },
-      body:JSON.stringify({'email':null, 'password':null})
-     })
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUser(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')) : null);
+      setAuthTokens(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')) : null);
+    }
+  }, [authTokens, user])
+
+  let logoutUser = () => {
+    setAuthTokens(null)
+    setUser(null)
+    localStorage.removeItem('authTokens')
+    Router.push("/auth/login");
   }
 
   const contextData = {
-     loginUser:loginUser
+    user:user,
+    authTokens:authTokens,
+    setAuthTokens:setAuthTokens,
+    setUser:setUser,
+    logoutUser:logoutUser,
   }
 
+  useEffect(()=> {
+
+      if(authTokens){
+          setUser(jwt_decode(authTokens.access))
+      }
+      setLoading(false)
+
+  }, [authTokens, loading])
+
   return (
-    <AuthContext.Provider value={{user, setUser}}>       
-        {props.children}
+    <AuthContext.Provider value={contextData}>       
+        {loading ? null : props.children}
     </AuthContext.Provider>
   )
 }

@@ -5,7 +5,7 @@ import { useContext } from 'react'
 import AuthContext from '../context/AuthContext'
 
 
-const baseURL = 'http://127.0.0.1:8000'
+const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 
 const useAxios = () => {
@@ -17,16 +17,16 @@ const useAxios = () => {
     });
 
 
-    axiosInstance.interceptors.request.use(async req => {
+    axiosInstance.interceptors.request.use(async req => {                           // Axios Interceptors
     
         const user = jwt_decode(authTokens.access)
         const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
     
         if(!isExpired) return req
     
-        const response = await axios.post(`${baseURL}/api/token/refresh/`, {
+        const response = await axios.post(`${baseURL}/api/token/refresh/`, {           // request for sending refresh token to generate access token
             refresh: authTokens.refresh
-          });
+        });
     
         localStorage.setItem('authTokens', JSON.stringify(response.data))
         

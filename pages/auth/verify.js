@@ -19,11 +19,11 @@ const verify = (props) => {
   }, [props.router.query]);  
 
   // Resend OTP
-  const sendOTP = () => {
+  const sendOTP = async (e) => {
     
-    setEmail(prompt('Please enter your Registered Email'));               // prompt to ask for email to send OTP on
+    if(!email)   setEmail(prompt('Please enter your Registered Email'));               // prompt to ask for email to send OTP on
     
-    axios.post(API_URL + '/send_otp', {
+    await axios.post(API_URL + '/send_otp', {
       email : email
     })
 
@@ -50,9 +50,9 @@ const verify = (props) => {
     });
   }
 
-  const handleSignUp = () => {
+  const handleSignUp = async (e) => {
     
-    axios.post(API_URL + '/verify', {
+    await axios.post(API_URL + '/verify', {
       email : email, 
       otp : parseInt(OTP)
     })

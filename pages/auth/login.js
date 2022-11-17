@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
-import {Router, withRouter} from "next/router";
+import { Router, withRouter } from "next/router";
 import axios from "axios";
-
+import jwt_decode from "jwt-decode";
 import AuthContext from "../../context/AuthContext";         
 import {toast} from "react-toastify";
 
@@ -18,55 +18,28 @@ const login = (props) => {
     props.router.query?.email && setEmail(props.router.query?.email);      // sent email as query during router.push('/verify'), now to access this props import withRouter, and return this page within withRouter(verify)
   }, [props.router.query]);  
   
-  // Resend OTP
-  const sendOTP = () => {
-    
-    axios.post(API_URL + '/send_otp', {
-      email : email
-    })
 
-    .then(res => {                
-      console.log(res); 
-      toast(res.request.response, {
-        type: "success"
-      });
-    })
-
-    .catch(error => {
-      console.log(error);
-      var errorMessage = error;
-      if (error.response) {
-        errorMessage = error.response.data.message;
-        console.log("server responded");
-      } else if (error.request) {
-        errorMessage = error.message;
-      } 
-      
-      toast(errorMessage, {
-        type: "error"
-      });
-    });
-  }
-  
-  const handleSignUp = () => {
+  const handleLogin = async (e) => {
     
-    axios.post(API_URL + '/verify', {
+    await axios.post(API_URL + '/login', {
       email : email, 
-      otp : OTP
+      password : password
     })
 
     .then(res => {                
       console.log(res); 
-      toast(res.request.response, {
+      toast(res.data.message, {
         type: "success"
       });
-      Context.setUser({ email: email });
-
+      
+      Context.setAuthTokens(data)                  
+      Context.setUser(jwt_decode(data.access))                            //user authenticated in all pages, using context api         
+      localStorage.setItem('authTokens', JSON.stringify(data))           // access and refresh tokens stored in localStorage 
+      
       Router.push({               
         pathname: '/',
         query: { email: email }
       }, '/');
-      //user authenticated in all pages, using context api
     })
 
     .catch(error => {
@@ -87,12 +60,12 @@ const login = (props) => {
 
   const handleSubmit = e => {
     e.preventDefault();       //prevent page/component reload on form submit
-    handleSignUp();
+    handleLogin();
   };
 
-//   if(Context.user?.username){      //user already authenticated
-//     Router.push("/");
-//   }
+  if(Context.user){      //user already authenticated
+    Router.push("/");
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-red-500 to-gray-800 flex items-center">
@@ -133,11 +106,11 @@ const login = (props) => {
               </div>
 
               <div className="mt-8">
-                <button className="w-full bg-red-800 py-3 text-center text-white text-xl rounded-sm">Verify</button>
+                <button className="w-full bg-red-800 py-3 text-center text-white text-xl rounded-sm">Login</button>
               </div>
 
-              <div className="mt-3 flex justify-end">
-                <pre className="mb-4"><a className='text-blue-400 font-semibold py-1 cursor-pointer' onClick={sendOTP}>Forgot Password?</a></pre>
+              <div className="mt-3 flex justify-center">
+                <pre className="mb-4">Don't have an account? <a className='text-blue-400 font-semibold py-1 cursor-pointer' href='/auth/signup'>Sign up</a></pre>
               </div>
             </form>
           </div>

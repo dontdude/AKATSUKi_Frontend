@@ -14,9 +14,9 @@ const Signup = () => {
   const [password, setPassword] = useState('');
 
   // sends otp only when user in successfully registered
-  const sendOTP = () => {
+  const sendOTP = async (e) => {
 
-    axios.post(API_URL + '/send_otp', {
+    await axios.post(API_URL + '/send_otp', {
       email : email
     })
 
@@ -49,9 +49,9 @@ const Signup = () => {
   }
 
   // Send registration form details to api
-  const handleSignUp = () => {
+  const handleSignUp = async (e) => {
     
-    axios.post(API_URL + '/signup', {
+    await axios.post(API_URL + '/signup', {
       email : email, 
       password : password,
       username : userName,
