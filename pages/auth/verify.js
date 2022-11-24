@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Router, withRouter } from "next/router";
+import { useRouter, withRouter } from "next/router";
 import axios from "axios";
 
 import AuthContext from "../../context/AuthContext";         
@@ -8,6 +8,8 @@ import {toast} from "react-toastify";
 
 const verify = (props) => {
 
+  const Router  = useRouter();
+  
   const Context = useContext(AuthContext); 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;   
   
@@ -23,7 +25,7 @@ const verify = (props) => {
     
     if(!email)   setEmail(prompt('Please enter your Registered Email'));               // prompt to ask for email to send OTP on
     
-    await axios.post(API_URL + '/send_otp', {
+    await axios.post(API_URL + '/auth/send-otp', {
       email : email
     })
 
@@ -52,7 +54,7 @@ const verify = (props) => {
 
   const handleSignUp = async (e) => {
     
-    await axios.post(API_URL + '/verify', {
+    await axios.post(API_URL + '/auth/verify', {
       email : email, 
       otp : parseInt(OTP)
     })

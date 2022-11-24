@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Router, withRouter } from "next/router";
+import { useRouter, withRouter } from "next/router";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import AuthContext from "../../context/AuthContext";         
@@ -7,6 +7,8 @@ import {toast} from "react-toastify";
 
 
 const login = (props) => {
+
+  const Router = useRouter();
 
   const Context = useContext(AuthContext); 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;       
@@ -21,20 +23,20 @@ const login = (props) => {
 
   const handleLogin = async (e) => {
     
-    await axios.post(API_URL + '/login', {
+    await axios.post(API_URL + '/auth/login', {
       email : email, 
       password : password
     })
 
     .then(res => {                
       console.log(res); 
-      toast(res.data.message, {
+      toast("Successfully logged In", {
         type: "success"
       });
       
-      Context.setAuthTokens(data)                  
-      Context.setUser(jwt_decode(data.access))                            //user authenticated in all pages, using context api         
-      localStorage.setItem('authTokens', JSON.stringify(data))           // access and refresh tokens stored in localStorage 
+      Context.setAuthTokens(res.data)                  
+      console.log(jwt_decode(res.data.access_token))                            //user authenticated in all pages, using context api         
+      localStorage.setItem('authTokens', JSON.stringify(res.data))           // access and refresh tokens stored in localStorage 
       
       Router.push({               
         pathname: '/',

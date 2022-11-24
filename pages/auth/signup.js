@@ -16,13 +16,13 @@ const Signup = () => {
   // sends otp only when user in successfully registered
   const sendOTP = async (e) => {
 
-    await axios.post(API_URL + '/send_otp', {
+    await axios.post(API_URL + '/auth/send-otp', {
       email : email
     })
 
     .then(res => {                
       console.log(res); 
-      toast(res.request.response, {
+      toast(res.data.message, {
         type: "success"
       });
       
@@ -51,7 +51,7 @@ const Signup = () => {
   // Send registration form details to api
   const handleSignUp = async (e) => {
     
-    await axios.post(API_URL + '/signup', {
+    await axios.post(API_URL + '/auth/signup', {
       email : email, 
       password : password,
       username : userName,
@@ -60,7 +60,7 @@ const Signup = () => {
 
     .then(res => {  
       console.log(res); 
-      toast(res.request.response.message, {
+      toast(res.data.message, {
         type: "success"
       });
       
@@ -71,7 +71,7 @@ const Signup = () => {
       console.log(error);
       var errorMessage = error;
       if (error.response) {
-        errorMessage = error.response.data.message;
+        errorMessage = error.data.message;
         console.log("server responded");
       } else if (error.request) {
         errorMessage = error.message;
